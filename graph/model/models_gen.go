@@ -2,9 +2,35 @@
 
 package model
 
+type Link struct {
+	ID      string `json:"id"`
+	Title   string `json:"title"`
+	Address string `json:"address"`
+	User    *User  `json:"user"`
+}
+
+type Login struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type NewLink struct {
+	Title   string `json:"title"`
+	Address string `json:"address"`
+}
+
 type NewTodo struct {
 	Text   string `json:"text"`
 	UserID string `json:"userId"`
+}
+
+type NewUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type RefreshTokenInput struct {
+	Token string `json:"token"`
 }
 
 type Todo struct {
