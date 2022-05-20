@@ -7,8 +7,10 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/mux"
 	"github.com/senowijayanto/hackernews/graph"
 	"github.com/senowijayanto/hackernews/graph/generated"
+	"github.com/senowijayanto/hackernews/internal/auth"
 	db "github.com/senowijayanto/hackernews/internal/pkg/db/mysql"
 )
 
@@ -20,14 +22,18 @@ func main() {
 		port = defaultPort
 	}
 
+	router := mux.NewRouter()
+
+	router.Use(auth.Middleware())
+
 	db.InitDB()
 	db.Migrate()
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
